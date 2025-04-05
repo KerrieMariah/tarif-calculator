@@ -31,12 +31,17 @@
                 <form id="tariff-form">
                     <div class="form-group">
                         <label for="country">Country</label>
-                        <input type="text" id="country" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="new-tariff">New Tariff (%)</label>
-                        <input type="number" id="new-tariff" min="0" max="100" step="0.01" required>
+                        <select id="country" required>
+                            <option value="">Select country</option>
+                            <option value="Afghanistan">Afghanistan</option>
+                            <option value="Albania">Albania</option>
+                            <option value="Algeria">Algeria</option>
+                            <option value="Andorra">Andorra</option>
+                            <option value="Angola">Angola</option>
+                            <option value="Anguilla">Anguilla</option>
+                            <option value="China">China</option>
+                            <!-- Add more countries as needed -->
+                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -62,6 +67,11 @@
                 <h3>Tariff Impact Results</h3>
                 
                 <div class="results-grid">
+                    <div class="result-item">
+                        <h4>New Tariff</h4>
+                        <p id="new-tariff">0.00%</p>
+                    </div>
+                    
                     <div class="result-item">
                         <h4>New Total Duties</h4>
                         <p id="new-total-duties">0.00%</p>

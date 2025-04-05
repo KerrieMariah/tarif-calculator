@@ -3,6 +3,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsSection = document.getElementById('results-section');
     let impactChart = null;
 
+    // Country tariff rates from Excel Sheet1
+    const countryTariffs = {
+        "Afghanistan": 0.10,
+        "Albania": 0.10,
+        "Algeria": 0.30,
+        "Andorra": 0.10,
+        "Angola": 0.32,
+        "Anguilla": 0.10,
+        // Add all countries from the Excel Sheet1 here
+        "China": 0.34,
+        // ... other countries
+    };
+
     tariffForm.addEventListener('submit', function(e) {
         e.preventDefault();
         calculateTariffImpact();
@@ -11,29 +24,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function calculateTariffImpact() {
         // Get form values
         const country = document.getElementById('country').value;
-        const newTariff = parseFloat(document.getElementById('new-tariff').value);
         const currentUnitCost = parseFloat(document.getElementById('current-unit-cost').value);
-        const previousDuties = parseFloat(document.getElementById('previous-duties').value);
+        const previousDuties = parseFloat(document.getElementById('previous-duties').value) / 100; // Convert to decimal
         const currentRetailPrice = parseFloat(document.getElementById('current-retail-price').value);
         
-        // Calculate new total duties
-        const newTotalDuties = previousDuties + newTariff;
+        // 1. Look up New Tariff based on selected Country (from Excel SUMIFS formula)
+        const newTariff = countryTariffs[country] || 0;
         
-        // Calculate costs with duties
-        const oldCostWithDuties = currentUnitCost * (1 + (previousDuties / 100));
-        const newCostWithDuties = currentUnitCost * (1 + (newTotalDuties / 100));
+        // 2. Calculate New Total Duties = New Tariff + Total Duties Paid prior to April 2nd
+        const newTotalDuties = newTariff + previousDuties;
         
-        // Calculate margins
-        const oldMargin = ((currentRetailPrice - oldCostWithDuties) / currentRetailPrice) * 100;
-        const newMargin = ((currentRetailPrice - newCostWithDuties) / currentRetailPrice) * 100;
+        // 3. Calculate Old Margin = (Current Retail Price - (Current Unit Cost * (1 + Previous Duties))) / Current Retail Price
+        // This matches the Excel formula: (C9-(C6*(1+C7)))/C9
+        const oldMargin = (currentRetailPrice - (currentUnitCost * (1 + previousDuties))) / currentRetailPrice;
         
-        // Calculate proposed retail price to maintain old margin
-        const proposedRetailPrice = newCostWithDuties / (1 - (oldMargin / 100));
+        // 4. Calculate New Margin at Current Retail Price
+        // This matches the Excel formula: (C9-(C6*(1+C8)))/C9
+        const newMargin = (currentRetailPrice - (currentUnitCost * (1 + newTotalDuties))) / currentRetailPrice;
         
-        // Update results
-        document.getElementById('new-total-duties').textContent = `${newTotalDuties.toFixed(2)}%`;
-        document.getElementById('old-margin').textContent = `${oldMargin.toFixed(2)}%`;
-        document.getElementById('new-margin').textContent = `${newMargin.toFixed(2)}%`;
+        // 5. Calculate Proposed Retail Price at Old Margin
+        // This matches the Excel formula: (C6*(1+C8))/(1-C10)
+        const proposedRetailPrice = (currentUnitCost * (1 + newTotalDuties)) / (1 - oldMargin);
+        
+        // Update results (convert decimals to percentages for display)
+        document.getElementById('new-tariff').textContent = `${(newTariff * 100).toFixed(2)}%`;
+        document.getElementById('new-total-duties').textContent = `${(newTotalDuties * 100).toFixed(2)}%`;
+        document.getElementById('old-margin').textContent = `${(oldMargin * 100).toFixed(2)}%`;
+        document.getElementById('new-margin').textContent = `${(newMargin * 100).toFixed(2)}%`;
         document.getElementById('proposed-retail-price').textContent = formatCurrency(proposedRetailPrice);
         
         // Show results section
@@ -44,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update impact text
         const percentageChange = ((proposedRetailPrice - currentRetailPrice) / currentRetailPrice) * 100;
-        const impactText = `Due to the new tariff of ${newTariff}% on goods from ${country}, the total duties have increased from ${previousDuties}% to ${newTotalDuties}%. To maintain your current profit margin of ${oldMargin.toFixed(2)}%, the retail price would need to increase from ${formatCurrency(currentRetailPrice)} to ${formatCurrency(proposedRetailPrice)}, a ${percentageChange.toFixed(2)}% increase.`;
+        const impactText = `Due to the new tariff of ${(newTariff * 100).toFixed(2)}% on goods from ${country}, the total duties have increased from ${(previousDuties * 100).toFixed(2)}% to ${(newTotalDuties * 100).toFixed(2)}%. To maintain your current profit margin of ${(oldMargin * 100).toFixed(2)}%, the retail price would need to increase from ${formatCurrency(currentRetailPrice)} to ${formatCurrency(proposedRetailPrice)}, a ${percentageChange.toFixed(2)}% increase.`;
         
         document.getElementById('impact-text').textContent = impactText;
         
@@ -101,36 +118,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    function generateImpactText(origin, destination, category, currentTariff, proposedTariff, percentageChange) {
-        const countryNames = {
-            'us': 'the United States',
-            'cn': 'China',
-            'eu': 'the European Union',
-            'uk': 'the United Kingdom',
-            'jp': 'Japan',
-            'other': 'your selected country'
-        };
-        
-        const categoryNames = {
-            'electronics': 'electronics',
-            'automotive': 'automotive products',
-            'agriculture': 'agricultural products',
-            'textiles': 'textiles',
-            'steel': 'steel and metals',
-            'other': 'products in this category'
-        };
-        
-        let impact = '';
-        
-        if (percentageChange > 0) {
-            impact = `The proposed tariff increase from ${currentTariff}% to ${proposedTariff}% on ${categoryNames[category]} imported from ${countryNames[origin]} to ${countryNames[destination]} would result in a ${percentageChange.toFixed(2)}% cost increase. This may impact competitiveness and potentially lead to higher consumer prices.`;
-        } else if (percentageChange < 0) {
-            impact = `The proposed tariff reduction from ${currentTariff}% to ${proposedTariff}% on ${categoryNames[category]} imported from ${countryNames[origin]} to ${countryNames[destination]} would result in a ${Math.abs(percentageChange).toFixed(2)}% cost decrease. This could improve competitiveness and potentially lead to lower consumer prices.`;
-        } else {
-            impact = `There is no change in tariff rates, so costs will remain the same for ${categoryNames[category]} imported from ${countryNames[origin]} to ${countryNames[destination]}.`;
-        }
-        
-        return impact;
-    }
-}); 
+});
