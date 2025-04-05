@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Tariff Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Global Tariff Calculator</h1>
+            <p class="tagline">Understand the impact of international trade policies on your business</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="intro">
+            <h2>Navigate Trade Complexities with Confidence</h2>
+            <p>Our calculator helps businesses and analysts understand the financial implications of changing tariff policies between countries. Enter your product details below to see how tariffs affect pricing and competitiveness.</p>
+        </section>
+
+        <section class="calculator-section">
+            <div class="calculator-card">
+                <h3>Tariff Impact Calculator</h3>
+                
+                <form id="tariff-form">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-tariff">New Tariff (%)</label>
+                        <input type="number" id="new-tariff" min="0" max="100" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="current-unit-cost">Current Unit Cost ($)</label>
+                        <input type="number" id="current-unit-cost" min="0" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="previous-duties">Total Duties Paid prior to April 2nd (%)</label>
+                        <input type="number" id="previous-duties" min="0" max="100" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="current-retail-price">Current Retail Price ($)</label>
+                        <input type="number" id="current-retail-price" min="0" step="0.01" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-calculate">Calculate Impact</button>
+                </form>
+            </div>
+            
+            <div class="results-card" id="results-section" style="display: none;">
+                <h3>Tariff Impact Results</h3>
+                
+                <div class="results-grid">
+                    <div class="result-item">
+                        <h4>New Total Duties</h4>
+                        <p id="new-total-duties">0.00%</p>
+                    </div>
+                    
+                    <div class="result-item">
+                        <h4>Old Margin</h4>
+                        <p id="old-margin">0.00%</p>
+                    </div>
+                    
+                    <div class="result-item">
+                        <h4>New Margin at Current Retail Price</h4>
+                        <p id="new-margin">0.00%</p>
+                    </div>
+                    
+                    <div class="result-item">
+                        <h4>Proposed Retail Price at Old Margin</h4>
+                        <p id="proposed-retail-price">$0.00</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="impact-chart"></canvas>
+                </div>
+                
+                <div class="impact-summary">
+                    <h4>Impact Summary</h4>
+                    <p id="impact-text">Enter your product details to see the impact analysis.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="info-section">
+            <h2>Understanding Tariffs</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>What are Tariffs?</h3>
+                    <p>Tariffs are taxes imposed by governments on imported goods. They're designed to protect domestic industries by making imported products more expensive.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>Current Trade Tensions</h3>
+                    <p>Recent years have seen escalating trade tensions between major economies, with tariffs being used as economic and political tools.</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>Business Impact</h3>
+                    <p>Tariffs can significantly impact supply chains, pricing strategies, and market competitiveness for businesses engaged in international trade.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Global Tariff Calculator. This tool is for informational purposes only.</p>
+            <p>Data is based on publicly available information and may not reflect all applicable fees or regulations.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
