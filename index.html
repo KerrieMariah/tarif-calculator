@@ -127,11 +127,15 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2023 Global Tariff Calculator. This tool is for informational purposes only.</p>
+            <p>&copy; <span id="current-year"></span> Global Tariff Calculator. This tool is for informational purposes only.</p>
             <p>Data is based on publicly available information and may not reflect all applicable fees or regulations.</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html> 
